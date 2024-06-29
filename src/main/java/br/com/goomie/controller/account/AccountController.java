@@ -3,6 +3,7 @@ package br.com.goomie.controller.account;
 import br.com.goomie.model.account.Account;
 import br.com.goomie.service.account.AccountService;
 import lombok.RequiredArgsConstructor;
+import org.apache.coyote.Response;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -29,16 +30,33 @@ public class AccountController {
     }
 
     @PostMapping
-    public ResponseEntity<Void> create(Account request) {
+    public ResponseEntity<Void> create(@RequestBody Account request) {
         service.create(request);
-
-        URI uri = ServletUriComponentsBuilder.
-                fromCurrentRequestUri()
-                .buildAndExpand("/{id}", request.getId())
-                .toUri();
-
-        System.out.println("URI: " + uri);
-
+        URI uri = createURI(request);
         return ResponseEntity.created(uri).build();
+    }
+
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
+        service.delete(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<Void> update(@PathVariable Long id,
+                                       @RequestBody Account request) {
+
+        service.update(id, request);
+        return ResponseEntity.noContent().build();
+
+    }
+
+    private URI createURI(Account account) {
+        return ServletUriComponentsBuilder
+                .fromCurrentRequestUri()
+                .path("/{id}")
+                .buildAndExpand(account.getId())
+                .toUri();
     }
 }
