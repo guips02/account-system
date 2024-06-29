@@ -1,10 +1,17 @@
 package br.com.goomie.service.account;
 
 import br.com.goomie.model.account.Account;
+import br.com.goomie.model.account.AccountRequest;
+import br.com.goomie.model.account.AccountResponse;
+import br.com.goomie.model.account.enums.Group;
+import br.com.goomie.model.account.enums.Nature;
+import br.com.goomie.model.account.enums.Type;
 import br.com.goomie.repository.account.AccountRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -13,30 +20,42 @@ public class AccountService {
 
     private final AccountRepository repository;
 
-    public Account findById(Long id) {
+    public AccountResponse findById(Long id) {
         Account account = fetchAccount(id);
-        return account;
+        return convertToResponse(account);
     }
 
 
-    public List<Account> findAll() {
-        return repository.findAll();
+    public List<AccountResponse> findAll() {
+        List<Account> accounts = repository.findAll();
+
+        List<AccountResponse> result = accounts
+                .stream()
+                .map((account) -> convertToResponse(account))
+                .toList();
+
+        return result;
     }
 
-    public void create(Account obj) {
+    public Long create(AccountRequest obj) {
+        Account account = new Account();
 
-        if(repository.existsById(obj.getId())) {
-            throw new IllegalStateException("Conta já existe.");
-        }
+        BeanUtils.copyProperties(obj, account);
 
-        repository.save(obj);
+        account.setType(Type.valueOf(obj.getType()));
+        account.setGroup(Group.valueOf(obj.getGroup()));
+        account.setNature(Nature.valueOf(obj.getNature()));
+
+        repository.save(account);
+
+        return account.getId();
     }
 
     public void delete(Long id) {
         repository.deleteById(id);
     }
 
-    public void update(Long id, Account obj) {
+    public void update(Long id, AccountRequest obj) {
         Account entity = fetchAccount(id);
         updateData(entity, obj);
         repository.save(entity);
@@ -47,13 +66,27 @@ public class AccountService {
                 .orElseThrow(() -> new RuntimeException("Conta não existente"));
     }
 
-    private void updateData(Account entity, Account request) {
+    private void updateData(Account entity, AccountRequest request) {
         entity.setClassification(request.getClassification());
         entity.setCode(request.getCode());
-        entity.setType(request.getType());
-        entity.setNature(request.getNature());
-        entity.setGroup(request.getGroup());
+
+        Type type = Type.valueOf(request.getType());
+        Nature nature = Nature.valueOf(request.getNature());
+        Group group = Group.valueOf(request.getGroup());
+
+        entity.setType(type);
+        entity.setNature(nature);
+        entity.setGroup(group);
         entity.setName(request.getName());
+    }
+
+    private AccountResponse convertToResponse(Account source) {
+        AccountResponse response = new AccountResponse();
+        BeanUtils.copyProperties(source, response);
+        response.setType(source.getType().getLabel());
+        response.setGroup(source.getGroup().getLabel());
+        response.setNature(source.getNature().getLabel());
+        return response;
     }
 
 }

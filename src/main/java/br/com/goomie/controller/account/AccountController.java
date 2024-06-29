@@ -1,9 +1,10 @@
 package br.com.goomie.controller.account;
 
 import br.com.goomie.model.account.Account;
+import br.com.goomie.model.account.AccountRequest;
+import br.com.goomie.model.account.AccountResponse;
 import br.com.goomie.service.account.AccountService;
 import lombok.RequiredArgsConstructor;
-import org.apache.coyote.Response;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -19,20 +20,20 @@ public class AccountController {
     private final AccountService service;
 
     @GetMapping("/{id}")
-    public ResponseEntity<Account> findById(@PathVariable Long id) {
-        Account account = service.findById(id);
+    public ResponseEntity<AccountResponse> findById(@PathVariable Long id) {
+        AccountResponse account = service.findById(id);
         return ResponseEntity.ok().body(account);
     }
 
     @GetMapping
-    public ResponseEntity<List<Account>> findAll() {
+    public ResponseEntity<List<AccountResponse>> findAll() {
         return ResponseEntity.ok().body(service.findAll());
     }
 
     @PostMapping
-    public ResponseEntity<Void> create(@RequestBody Account request) {
-        service.create(request);
-        URI uri = createURI(request);
+    public ResponseEntity<Void> create(@RequestBody AccountRequest request) {
+        Long id = service.create(request);
+        URI uri = createURI(id);
         return ResponseEntity.created(uri).build();
     }
 
@@ -45,18 +46,18 @@ public class AccountController {
 
     @PutMapping("/{id}")
     public ResponseEntity<Void> update(@PathVariable Long id,
-                                       @RequestBody Account request) {
+                                       @RequestBody AccountRequest request) {
 
         service.update(id, request);
         return ResponseEntity.noContent().build();
 
     }
 
-    private URI createURI(Account account) {
+    private URI createURI(Long accountId) {
         return ServletUriComponentsBuilder
                 .fromCurrentRequestUri()
                 .path("/{id}")
-                .buildAndExpand(account.getId())
+                .buildAndExpand(accountId)
                 .toUri();
     }
 }
