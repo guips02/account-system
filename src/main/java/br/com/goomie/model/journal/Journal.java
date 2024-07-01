@@ -24,12 +24,14 @@ public class Journal {
     @Column(nullable = false)
     private LocalDate date;
 
-    // TODO FAZER A ASSOCIACAO COM CONTA
-    @Column(nullable = false)
+    // TODO REVISAR A ASSOCIACAO COM CONTA
+    @ManyToOne
+    @JoinColumn(name = "debt_account_id", nullable = false)
     private Account debtAccount;
 
-    // TODO TODO FAZER A ASSOCIACAO COM CONTA
-    @Column(nullable = false)
+    // TODO REVISAR A ASSOCIACAO COM CONTA
+    @ManyToOne
+    @JoinColumn(name = "credit_account_id", nullable = false)
     private Account creditAccount;
 
     @Column(nullable = false)
