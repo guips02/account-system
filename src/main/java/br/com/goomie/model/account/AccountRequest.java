@@ -2,6 +2,7 @@ package br.com.goomie.model.account;
 
 import lombok.Data;
 
+// CLASSE PARA FAZER REQUISICOES NO BODY (DTO)
 @Data
 public class AccountRequest {
 

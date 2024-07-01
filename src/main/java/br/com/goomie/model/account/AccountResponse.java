@@ -2,6 +2,7 @@ package br.com.goomie.model.account;
 
 import lombok.Data;
 
+// CLASSE DE RESPOSTA (DTO)
 @Data
 public class AccountResponse {
     private Long id;

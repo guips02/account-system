@@ -12,13 +12,18 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import java.net.URI;
 import java.util.List;
 
+// DEFINE QUE A CLASSE É UM CONTROLLER
 @RestController
+// DEFINE O MAPEAMENTO DA REQUISICAO
 @RequestMapping("/account")
+// CONSTRUTORES QUE POSSUI (final)
 @RequiredArgsConstructor
 public class AccountController {
 
+    // INSERCAO DA DEPENDENCIA DO  SERVICO
     private final AccountService service;
 
+    // ACESSO DO METODO POR /ID NO URI
     @GetMapping("/{id}")
     public ResponseEntity<AccountResponse> findById(@PathVariable Long id) {
         AccountResponse account = service.findById(id);
